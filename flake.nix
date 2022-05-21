@@ -42,7 +42,7 @@
         c.hash = "sha256-oDOX6FWkQw+0oC70oQOfaHByAjuDWU848sALP8jYlaY=";
       };
 
-      packages.nanvna2-firmware-boardv2_2-broken = pkgsCross.stdenv.mkDerivation rec {
+      packages.nanovna2-firmware-boardv2_2-broken = pkgsCross.stdenv.mkDerivation rec {
         pname = "nanovna2-firmware";
         version = nanovna-src.b.version;
 
@@ -117,14 +117,14 @@
 
       # see https://nanorfe.com/nanovna-versions.html
       # We get no .elf, unfortunately.
-      packages.nanvna2-firmware-boardv2_2-prebuilt-binary = pkgs.fetchurl {
+      packages.nanovna2-firmware-boardv2_2-prebuilt-binary = pkgs.fetchurl {
         url = "https://nanorfe.com/downloads/20201013/nanovna-v2-20201013-v2_2.bin";
         hash = "sha256-rS6Dxxb/ewNb3UVDfjTZs4THiztafgRnJFSGHue8r6k=";
         passthru.version = "20201013";
       };
 
-      packages.nanvna2-firmware-boardv2_2-prebuilt = pkgs.runCommand "nanvna2-firmware-boardv2_2-prebuilt" {
-        binary = packages.nanvna2-firmware-boardv2_2-prebuilt-binary;
+      packages.nanovna2-firmware-boardv2_2-prebuilt = pkgs.runCommand "nanovna2-firmware-boardv2_2-prebuilt" {
+        binary = packages.nanovna2-firmware-boardv2_2-prebuilt-binary;
         BOARDNAME = "board_v2_2";
 
         newFirmwareSrc = pkgs.fetchFromGitHub {
@@ -156,8 +156,8 @@
         chmod +x $out/bin/flash-nanovna2-firmware-$BOARDNAME
       '';
 
-      apps.flash-nanovna2-firmware-board_v2_2-broken = { type = "app"; program = "${packages.nanvna2-firmware-boardv2_2-broken}/bin/flash-nanovna2-firmware-board_v2_2"; };
-      apps.flash-nanovna2-firmware-board_v2_2-prebuilt = { type = "app"; program = "${packages.nanvna2-firmware-boardv2_2-prebuilt}/bin/flash-nanovna2-firmware-board_v2_2"; };
+      apps.flash-nanovna2-firmware-board_v2_2-broken = { type = "app"; program = "${packages.nanovna2-firmware-boardv2_2-broken}/bin/flash-nanovna2-firmware-board_v2_2"; };
+      apps.flash-nanovna2-firmware-board_v2_2-prebuilt = { type = "app"; program = "${packages.nanovna2-firmware-boardv2_2-prebuilt}/bin/flash-nanovna2-firmware-board_v2_2"; };
 
       packages.nanovna-qt-src = pkgs.fetchFromGitHub {
         owner = "nanovna-v2";
