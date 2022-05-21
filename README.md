@@ -32,8 +32,7 @@ Then, you can use the following commands:
 * Start NanoVNA2-QT GUI:<br>
   `nix run github:BBBSnowball/NanoVNA2-firmware#nanovna-qt`
 * Start NanoVNASaver GUI:<br>
-  `nix shell nixpkgs#nanovna-saver -c NanoVNASaver`<br>
-  (or `nix run github:BBBSnowball/NanoVNA2-firmware#nanovna-saver` but this is just an alias)
+  `nix run github:BBBSnowball/NanoVNA2-firmware#nanovna-saver`
 
 (You can replace `github:BBBSnowball/NanoVNA2-firmware` by `.` if you run the commands in a local copy of the repo.)
 

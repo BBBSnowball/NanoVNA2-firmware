@@ -219,7 +219,17 @@
       apps.nanovna-qt = { type = "app"; program = "${packages.nanovna-qt}/bin/vna_qt"; };
 
       # This one is already packaged - not much to do here but let's add it here to have it "at hand".
-      packages.nanovna-saver = pkgs.nanovna-saver;
+      packages.nanovna-saver = pkgs.nanovna-saver.overrideAttrs (old: {
+        # avoid this error when saving calibration data:
+        # (python3.9:1395821): GLib-GIO-ERROR **: 19:09:47.752: Settings schema 'org.gtk.Settings.FileChooser' is not installed
+        # -> nanovna-saver already uses gappsWrapperArgs in its preFixup but it doesn't add wrapGAppsHook as a dependency
+        nativeBuildInputs = old.nativeBuildInputs ++ [ pkgs.pkgsBuildHost.wrapGAppsHook ];
+        # wrapGAppsHook should add at least one of these but that doesn't seem to work
+        buildInputs = with pkgs; [
+          dconf.lib
+          gtk3
+        ];
+      });
       apps.nanovna-saver = { type = "app"; program = "${packages.nanovna-saver}/bin/NanoVNASaver"; };
     };
     bySystem = foreachSystem forSystem;
