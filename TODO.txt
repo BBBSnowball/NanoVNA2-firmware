@@ -1,0 +1,24 @@
+== Can we add Wifi or Bluetooth? ==
+
+- connect ESP32-C3 to LCD_SPI/TOUCH_SPI (CONN303)
+  - We don't talk much to either of them when in USB mode and I would do the same for Remote Control mode.
+- what can we use for CS?
+  - If we find nothing else, use SI5351-I2C as a software chip-select. This is available on R309 and R310.
+  - T_CS and LCD_CS not selected.
+  - We could react to certain commands that are no-ops for LCD/Touch - but we have to get them to stop driving the MISO line.
+    (Or connect the ESP to T_DO, use LCD_CS and maybe use a larger value for R313...)
+  - Touch doesn't have to be fast so we can tunnel it through the ESP but that would complicate the wiring.
+- ESP implements serial over Bluetooth and Wifi (TCP).
+- Some simple management protocol so GD32 can have a UI for setting Wifi credentials and showing the Bluetooth pin and showing the IP address.
+- Existing software should just work if we talk the same protocol and we can have a pty on the host side.
+- ESP32-C3:
+  - SPI2 is general purpose and it supports slave mode.
+  - I2C supports up to 800 kBits, 7- or 10-bit addresses, master or slave. That should be enough.
+  - Only BLE, not normal Bluetooth. Should be fine if it is fast enough. Datasheet says up to 2 Mbps, which is slower than 12 Mbit USB.
+
+- **This is based on the v2_2 schematics but external connectors don't match that layout.**
+  - v2_0 and v2_1 are no better. v2_2 at least has three buttons but in a different place.
+
+- How much space do we have inside the case?
+  - The sides seem to be made of metal and there's also the battery - both of which is not good to have near the antenna.
+  - The important parts have metal shields according to the PCB file. If that is also true in reality, we probably don't have to worry about antenna RF influencing the measurements too much.
