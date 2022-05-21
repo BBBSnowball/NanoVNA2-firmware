@@ -14,15 +14,26 @@ Below is information for building and uploading the firmware.
 
 This fork adds some build support for Nix / NixOS. You need Nix with flake support.
 
-* If you don't have Nix, [install it](https://nixos.org/download.html). You don't need NixOS. Any Linux should be fine: `sh <(curl -L https://nixos.org/nix/install)`, follow the instructions
-* You need a Nix with flakes. Here is how to [enable flakes](https://nixos.wiki/wiki/flakes#Installing_flakes). You can get a temporary shell with Nix with flakes with this command (replace `nix` by `nixFlakes` in the commands below): `nix-shell https://github.com/BBBSnowball/nixcfg/archive/refs/heads/master.tar.gz`
+* If you don't have Nix, [install it](https://nixos.org/download.html). You don't need NixOS. Any Linux should be fine:
+  * `sh <(curl -L https://nixos.org/nix/install)`
+  * follow the instructions
+* You need a Nix with flakes. Here is how to [enable flakes](https://nixos.wiki/wiki/flakes#Installing_flakes). You can get a temporary shell with Nix with flakes with this command:
+  * `nix-shell https://github.com/BBBSnowball/nixcfg/archive/refs/heads/master.tar.gz`
+  * Replace `nix` by `nixFlakes` in the commands below.
 
-Then, you can use the following commands (you can replace `BBBSnowball/NanoVNA2-firmware` by `.` if you run this in a local copy of the repo):
+Then, you can use the following commands:
 
-* Download prebuilt firmware and flash it to the device: `nix run BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-prebuilt`
-* Build firmware and flash it to the device (*broken*, don't use): `nix run BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-broken`
-* Start NanoVNA2-QT GUI: `nix run BBBSnowball/NanoVNA2-firmware#nanovna-qt`
-* Start NanoVNASaver GUI: `nix shell nixpkgs#nanovna-saver -c NanoVNASaver` (or `nix run BBBSnowball/NanoVNA2-firmware#nanovna-saver` but this is just an alias)
+* Download prebuilt firmware and flash it to the device:<br>
+  `nix run BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-prebuilt`
+* Build firmware and flash it to the device (*broken*, don't use):<br>
+  `nix run BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-broken`
+* Start NanoVNA2-QT GUI:<br>
+  `nix run BBBSnowball/NanoVNA2-firmware#nanovna-qt`
+* Start NanoVNASaver GUI:<br>
+  `nix shell nixpkgs#nanovna-saver -c NanoVNASaver`<br>
+  (or `nix run BBBSnowball/NanoVNA2-firmware#nanovna-saver` but this is just an alias)
+
+(You can replace `BBBSnowball/NanoVNA2-firmware` by `.` if you run the commands in a local copy of the repo.)
 
 
 ## Installing the compiler (for non-NixOS - if you continue reading here, you probably don't want this fork ;-) )
