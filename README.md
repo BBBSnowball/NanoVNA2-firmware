@@ -23,12 +23,11 @@ This fork adds some build support for Nix / NixOS. You need Nix with flake suppo
 
 Then, you can use the following commands:
 
-* Download prebuilt firmware and flash it to the device:
+* Build firmware and flash it to the device:<br>
   * Connect NanoVNA V2 to computer with a micro USB cable.
   * Turn it on in bootloader mode by pressing the left button (next to CH0) while turning it on.
-  * `nix run github:BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-prebuilt -- -s /dev/ttyACM0`
-* Build firmware and flash it to the device (*broken*, don't use):<br>
-  `nix run github:BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2-broken -- -s /dev/ttyACM0`
+  * `nix run github:BBBSnowball/NanoVNA2-firmware#flash-nanovna2-firmware-board_v2_2 -- -s /dev/ttyACM0`
+  * If you want to go back to the prebuilt firmware, do the same but with `flash-nanovna2-firmware-board_v2_2-prebuilt`.
 * Start NanoVNA2-QT GUI:<br>
   `nix run github:BBBSnowball/NanoVNA2-firmware#nanovna-qt`
 * Start NanoVNASaver GUI:<br>

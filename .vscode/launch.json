@@ -14,9 +14,9 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
-            "armToolchainPath": "/nix/store/7la9364vq12nm7s2l6wcjvxzaf1fd8f3-arm-tools-for-vscode/bin",
+            "armToolchainPath": "/nix/store/gwmvddgv7ydrrjsvrf43z88rhx2wn5h5-arm-tools-for-vscode/bin",
             //"gdbPath": "/nix/store/j645zwb39a3v38mz9ky7qy654ifsfvjl-arm-none-eabi-gdb-11.1/bin/arm-none-eabi-gdb",
-            "serverpath": "/nix/store/4fsfs1nk8wkjy2v1dv7s1q31fqzch14f-openocd-0.11.0/bin/openocd",
+            "serverpath": "/nix/store/adhbb2w0xnffxyi85z0nkykqqqi92fj0-openocd-0.11.0/bin/openocd",
             "interface": "swd",
             // https://github.com/sipeed/platform-gd32v/blob/master/misc/svd/GD32VF103.svd
             //"svdFile": "${workspaceRoot}/GD32VF103.svd",
@@ -27,8 +27,6 @@
             "openOCDPreConfigLaunchCommands": ["set CPUTAPID 0x2ba01477"],
             "configFiles": [
                 "interface/stlink.cfg",
-                //"target\\stm32h7x.cfg"
-                //"target/gd32vf103.cfg"
                 "target/stm32f1x.cfg"
             ],
             "debuggerArgs": [

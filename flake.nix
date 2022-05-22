@@ -8,9 +8,28 @@
       nixpkgsFn = import nixpkgs;
       pkgs = nixpkgsFn { inherit system; };
 
-      pkgsCross = nixpkgsFn {
+      gd32f103-arch = pkgs.lib.systems.examples.arm-embedded // {
+        # seems to be ignored
+        platform = {
+          gcc.cpu = "cortex-m3";
+          gcc.extraFlags = ["-mthumb"];
+        };
+        # that makes a difference
+        gcc.cpu = "cortex-m3";
+        gcc.extraFlags = ["-mthumb"];
+      };
+
+      # We could use this for things that don't have to match the exact variant of ARM
+      # but that seems to be only GDB in our case.
+      pkgsCrossSomeArm = nixpkgsFn {
         inherit system;
         crossSystem = pkgs.lib.systems.examples.arm-embedded;
+        config.allowUnsupportedSystem = true;
+      };
+
+      pkgsCross = nixpkgsFn {
+        inherit system;
+        crossSystem = gd32f103-arch;
         config.allowUnsupportedSystem = true;
       };
 
@@ -62,9 +81,7 @@
         c.hash = "sha256-oDOX6FWkQw+0oC70oQOfaHByAjuDWU848sALP8jYlaY=";
       };
 
-      # The function register_fini from newlib is using Thumb instructions but its debug info and - more importantly - its pointer in __init_array_start
-      # says non-Thumb so we jump to somewhere in strtold and die...
-      packages.nanovna2-firmware-boardv2_2-broken = pkgsCross.stdenv.mkDerivation rec {
+      packages.nanovna2-firmware-boardv2_2 = pkgsCross.stdenv.mkDerivation rec {
         pname = "nanovna2-firmware";
         version = nanovna-src.b.version;
 
@@ -178,7 +195,7 @@
         chmod +x $out/bin/flash-nanovna2-firmware-$BOARDNAME
       '';
 
-      apps.flash-nanovna2-firmware-board_v2_2-broken = { type = "app"; program = "${packages.nanovna2-firmware-boardv2_2-broken}/bin/flash-nanovna2-firmware-board_v2_2"; };
+      apps.flash-nanovna2-firmware-board_v2_2 = { type = "app"; program = "${packages.nanovna2-firmware-boardv2_2}/bin/flash-nanovna2-firmware-board_v2_2"; };
       apps.flash-nanovna2-firmware-board_v2_2-prebuilt = { type = "app"; program = "${packages.nanovna2-firmware-boardv2_2-prebuilt}/bin/flash-nanovna2-firmware-board_v2_2"; };
 
       packages.nanovna-qt-src = pkgs.fetchFromGitHub {
@@ -260,13 +277,13 @@
 
         dontUnpack = true;
         a = packages.nanovna2-firmware-boardv2_2-prebuilt-binary;
-        b = packages.nanovna2-firmware-boardv2_2-broken;
-        b_src = packages.nanovna2-firmware-boardv2_2-broken.src;
+        b = packages.nanovna2-firmware-boardv2_2;
+        b_src = packages.nanovna2-firmware-boardv2_2.src;
 
         installPhase = ''
           mkdir $out
           name_a=prebuilt
-          name_b=broken
+          name_b=ours
 
           for ext in elf hex bin ; do
             cp $b/share/nanovna2/binary.$ext $out/$name_b.$ext
