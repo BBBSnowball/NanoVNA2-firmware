@@ -8,6 +8,8 @@
   - We could react to certain commands that are no-ops for LCD/Touch - but we have to get them to stop driving the MISO line.
     (Or connect the ESP to T_DO, use LCD_CS and maybe use a larger value for R313...)
   - Touch doesn't have to be fast so we can tunnel it through the ESP but that would complicate the wiring.
+  - S301 is DNI and it has through-holes. If we can drive BOOT0 and the ESP won't drive it during power-up, then we have dedicated pin.
+    -> The datasheet doesn't mention any GPIO on that pin.
 - ESP implements serial over Bluetooth and Wifi (TCP).
 - Some simple management protocol so GD32 can have a UI for setting Wifi credentials and showing the Bluetooth pin and showing the IP address.
 - Existing software should just work if we talk the same protocol and we can have a pty on the host side.
@@ -18,7 +20,15 @@
 
 - **This is based on the v2_2 schematics but external connectors don't match that layout.**
   - v2_0 and v2_1 are no better. v2_2 at least has three buttons but in a different place.
+  - It is quite close to v2_2 but the buttons are on the LCD PCB. The connector for them is at the position that has the buttons in the PCB but the footprint is slightly different (3rd hole is missing).
+  - Also, the SWD pads under the USB connector are missing.
 
 - How much space do we have inside the case?
   - The sides seem to be made of metal and there's also the battery - both of which is not good to have near the antenna.
+    - Battery is between the LCD connector and the MCU.
+    - There is some free space on the left side of the PCB. This is not present in the PCB file. It is 22x44mm but the mounting brackets for the side wall are right in the middle of the longer
+      side (18x11mm). Also, any ESP places there would be between a metal wall and two PCBs with GND planes.
   - The important parts have metal shields according to the PCB file. If that is also true in reality, we probably don't have to worry about antenna RF influencing the measurements too much.
+    - The areas with U401 (RX synthesizer) and U551 (SW_ECAL) are unshielded. The clamps are in place but the shield is missing.
+    - I think the two smaller regions on the bottom are not supposed to be shielded. The pads are probably the back side of the other shields.
+      They only have passive components for U401 (RX synthesizer) and U601 (TX synthesizer).
