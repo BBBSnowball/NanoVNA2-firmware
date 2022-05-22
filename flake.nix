@@ -266,9 +266,21 @@
       };
     };
     bySystem = foreachSystem forSystem;
+
+    checkShell = shellDerivation: shellDerivation.overrideAttrs (old: {
+      # We really only want to check the dependencies so monkey-patch the build
+      # to skip nobuildPhase (which causes an error and purpose) and not fail for
+      # some other reason.
+      dontUnpack = true;
+      phases = [ "buildPhase" ];
+      buildPhase = "touch $out";
+    });
   in {
     devShell = foreachSystem (system: bySystem.${system}.devShell);
     packages = foreachSystem (system: bySystem.${system}.packages);
     apps = foreachSystem (system: bySystem.${system}.apps);
+    checks = foreachSystem (system: bySystem.${system}.packages // {
+      devShell = checkShell bySystem.${system}.devShell;
+    });
   };
 }
