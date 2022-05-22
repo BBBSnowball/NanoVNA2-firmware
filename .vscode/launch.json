@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [     
+        {
+            // see https://forum.electro-smith.com/t/howto-vs-code-debugging-with-st-link-jtag/357
+        
+            "cwd": "${workspaceFolder}",
+            "executable": "${workspaceRoot}/binary.elf",
+            //"executable": "${workspaceRoot}/bootloader/binary.elf",
+            "name": "JTAG DEBUGGING",
+            "request": "launch",
+            "type": "cortex-debug",
+            "servertype": "openocd",
+            "armToolchainPath": "/nix/store/7la9364vq12nm7s2l6wcjvxzaf1fd8f3-arm-tools-for-vscode/bin",
+            //"gdbPath": "/nix/store/j645zwb39a3v38mz9ky7qy654ifsfvjl-arm-none-eabi-gdb-11.1/bin/arm-none-eabi-gdb",
+            "serverpath": "/nix/store/4fsfs1nk8wkjy2v1dv7s1q31fqzch14f-openocd-0.11.0/bin/openocd",
+            "interface": "swd",
+            // https://github.com/sipeed/platform-gd32v/blob/master/misc/svd/GD32VF103.svd
+            //"svdFile": "${workspaceRoot}/GD32VF103.svd",
+            // https://raw.githubusercontent.com/fduignan/stm32f103c8t6/master/STM32F103.svd
+            "svdFile": "${workspaceRoot}/STM32F103.svd",
+            "runToMain": false,
+            // ID is different for GD32F
+            "openOCDPreConfigLaunchCommands": ["set CPUTAPID 0x2ba01477"],
+            "configFiles": [
+                "interface/stlink.cfg",
+                //"target\\stm32h7x.cfg"
+                //"target/gd32vf103.cfg"
+                "target/stm32f1x.cfg"
+            ],
+            "debuggerArgs": [
+                "-d",
+                "${workspaceRoot}"
+              ],
+            "preRestartCommands": [
+                //"load",
+                "b reset_handler",
+                "enable breakpoint",
+                "monitor reset"
+            ],
+            //"showDevDebugOutput": "parsed"
+       }
+    ]
+}

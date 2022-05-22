@@ -20,7 +20,27 @@
         nativeBuildInputs = with pkgsCross.pkgsBuildHost; [
           gcc binutils
           pythonForUpload
+          gdb
+          openocd
+          stlink # In case one kills the bootloader while debugging. Never happend to me, you know ;-)
         ];
+
+        # Marus/cortex-debug plugin wants all the binaries next to each other.
+        VSCODE_ARM_TOOLCHAIN_BIN = "${pkgs.runCommand "arm-tools-for-vscode" { pkgs = with pkgsCross.pkgsBuildHost; [ gcc binutils-unwrapped binutils gdb openocd ]; } ''
+          mkdir -p $out/bin
+          for pkg in $pkgs ; do
+            ls -l $pkgs/bin $out/bin
+            ls -ld $out/bin
+            #cp -a $pkg/bin/* $out/bin/
+            for x in $pkg/bin/* ; do
+              ln -sf $x -t $out/bin/
+            done
+          done
+        ''}/bin";
+
+        shellHook = ''
+          echo "armToolchainPath for VS Code (Marus/cortex-debug): $VSCODE_ARM_TOOLCHAIN_BIN"
+        '';
       };
 
       nanovna-src = {
@@ -42,6 +62,8 @@
         c.hash = "sha256-oDOX6FWkQw+0oC70oQOfaHByAjuDWU848sALP8jYlaY=";
       };
 
+      # The function register_fini from newlib is using Thumb instructions but its debug info and - more importantly - its pointer in __init_array_start
+      # says non-Thumb so we jump to somewhere in strtold and die...
       packages.nanovna2-firmware-boardv2_2-broken = pkgsCross.stdenv.mkDerivation rec {
         pname = "nanovna2-firmware";
         version = nanovna-src.b.version;
@@ -231,6 +253,31 @@
         ];
       });
       apps.nanovna-saver = { type = "app"; program = "${packages.nanovna-saver}/bin/NanoVNASaver"; };
+
+
+      packages.compare-firmware = pkgsCross.stdenv.mkDerivation {
+        name = "compare-firmware";
+
+        dontUnpack = true;
+        a = packages.nanovna2-firmware-boardv2_2-prebuilt-binary;
+        b = packages.nanovna2-firmware-boardv2_2-broken;
+        b_src = packages.nanovna2-firmware-boardv2_2-broken.src;
+
+        installPhase = ''
+          mkdir $out
+          name_a=prebuilt
+          name_b=broken
+
+          for ext in elf hex bin ; do
+            cp $b/share/nanovna2/binary.$ext $out/$name_b.$ext
+          done
+          arm-none-eabi-objdump -d $out/$name_b.elf > $out/$name_b.lst
+
+          cp $a $out/$name_a.bin
+          arm-none-eabi-objcopy -I binary -O ihex --change-addresses 0x08004000 $out/$name_a.bin $out/$name_a.hex
+          cp $b_src/gd32f303cc_with_bootloader.ld $out/$name_b.ld
+        '';
+      };
     };
     bySystem = foreachSystem forSystem;
   in {
