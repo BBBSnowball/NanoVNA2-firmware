@@ -62,44 +62,18 @@
         '';
       };
 
-      nanovna-src = {
-        # matches date of prebuilt firmware but has compile errors
-        #NOTE 32077fdd887ec03a1fd00adec58264037c7504dc is the release tag 20201013 but it is identical except for the LICENSE file.
-        a.version = "20201013-24ccac";
-        a.rev = "24ccacaf2ff67d88261841a0845528d2d1d2aa7a";  
-        a.hash = "sha256-bjhoYIZUC5qLvLhdAJjuE7bpogTsBkCaMUHKzSMqibI=";
-
-        # slightly newer than `a` and fixes a compile error
-        # -> compiles but doesn't boot
-        b.version = "20201017-669fab";
-        b.rev = "669fab975c0ec064921825d7e5f297a0bbc6fc43";
-        b.hash = "sha256-mA8FADQEREaWTRCMF+NLvx6tRLqMejsbKXGmgd1Jm2w=";
-
-        # doesn't work for board-v2_2, it seems - at least when I build it
-        c.version = "20210915-d9c768";
-        c.rev = "d9c768b298677d2fecc98fb37ec9cd4395dc781e";
-        c.hash = "sha256-oDOX6FWkQw+0oC70oQOfaHByAjuDWU848sALP8jYlaY=";
-      };
-
       packages.nanovna2-firmware-boardv2_2 = pkgsCross.stdenv.mkDerivation rec {
         pname = "nanovna2-firmware";
-        version = nanovna-src.b.version;
+        version = "20210915-d9c768";
 
         passthru.src-info = {
           owner = "nanovna-v2";
           repo = "NanoVNA2-firmware";
-          inherit (nanovna-src.b) rev hash;
+          rev = "d9c768b298677d2fecc98fb37ec9cd4395dc781e";
+          hash = "sha256-oDOX6FWkQw+0oC70oQOfaHByAjuDWU848sALP8jYlaY=";
           fetchSubmodules = true;
         };
         src = pkgs.fetchFromGitHub passthru.src-info;
-
-        # get newer sources as well, for bootload_firmware.py script
-        newSrc = pkgs.fetchFromGitHub {
-          owner = "nanovna-v2";
-          repo = "NanoVNA2-firmware";
-          inherit (nanovna-src.c) rev hash;
-          fetchSubmodules = true;
-        };
 
         depsBuildBuild = [ pkgs.python3 ];
 
@@ -148,7 +122,7 @@
 
         installPhase = ''
           mkdir -p $out/bin $out/share/nanovna2
-          cp ${newSrc}/bootload_firmware.py binary.{bin,elf,hex} $out/share/nanovna2/
+          cp ${src}/bootload_firmware.py binary.{bin,elf,hex} $out/share/nanovna2/
           substitute ${uploadScript} $out/bin/flash-nanovna2-firmware-$BOARDNAME --subst-var out
           chmod +x $out/bin/flash-nanovna2-firmware-$BOARDNAME
         '';
@@ -166,12 +140,7 @@
         binary = packages.nanovna2-firmware-boardv2_2-prebuilt-binary;
         BOARDNAME = "board_v2_2";
 
-        newFirmwareSrc = pkgs.fetchFromGitHub {
-          owner = "nanovna-v2";
-          repo = "NanoVNA2-firmware";
-          inherit (nanovna-src.c) rev hash;
-          fetchSubmodules = false;
-        };
+        firmwareSrc = packages.nanovna2-firmware-boardv2_2.src;
 
         inherit pythonForUpload;
 
@@ -189,7 +158,7 @@
         '';
       } ''
         mkdir -p $out/bin $out/share/nanovna2
-        cp $newFirmwareSrc/bootload_firmware.py $out/share/nanovna2/
+        cp $firmwareSrc/bootload_firmware.py $out/share/nanovna2/
         cp $binary $out/share/nanovna2/binary.bin
         substitute $uploadScript $out/bin/flash-nanovna2-firmware-$BOARDNAME --subst-var out
         chmod +x $out/bin/flash-nanovna2-firmware-$BOARDNAME
